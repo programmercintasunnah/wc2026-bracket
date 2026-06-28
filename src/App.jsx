@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./App.css";
 
 const INITIAL_R32 = [
-  // Left side (top to bottom)
   { id: "L1", t1: "Germany", t2: "Paraguay" },
   { id: "L2", t1: "France", t2: "Sweden" },
   { id: "L3", t1: "South Africa", t2: "Canada" },
@@ -11,7 +10,6 @@ const INITIAL_R32 = [
   { id: "L6", t1: "Spain", t2: "Austria" },
   { id: "L7", t1: "USA", t2: "Bosnia" },
   { id: "L8", t1: "Belgium", t2: "Senegal" },
-  // Right side (top to bottom)
   { id: "R1", t1: "Brazil", t2: "Japan" },
   { id: "R2", t1: "Ireland", t2: "Norway" },
   { id: "R3", t1: "Mexico", t2: "Ecuador" },
@@ -22,19 +20,56 @@ const INITIAL_R32 = [
   { id: "R8", t1: "Colombia", t2: "Ghana" },
 ];
 
-function randScore() {
-  const a = Math.floor(Math.random() * 5);
-  let b = Math.floor(Math.random() * 5);
-  if (a === b) b = a === 0 ? 1 : a - 1;
-  return [a, b];
+const FIFA_RANKINGS = {
+  Argentina: 1, Spain: 2, France: 3, England: 4,
+  Portugal: 5, Brazil: 6, Morocco: 7, Netherlands: 8,
+  Belgium: 9, Germany: 10, Croatia: 11, Colombia: 13,
+  Mexico: 14, Senegal: 15, USA: 17, Japan: 18,
+  Switzerland: 19, Ecuador: 23, Austria: 24, Australia: 27,
+  Algeria: 28, Egypt: 29, Canada: 30, Norway: 31,
+  Sweden: 38, Paraguay: 41, "DR Congo": 46, Ireland: 58,
+  "South Africa": 60, Bosnia: 64, "Cape Verde": 67, Ghana: 73,
+};
+
+function randScore(t1, t2) {
+  const r1 = FIFA_RANKINGS[t1] ?? 50;
+  const r2 = FIFA_RANKINGS[t2] ?? 50;
+  const s1 = Math.max(1, 33 - r1);
+  const s2 = Math.max(1, 33 - r2);
+  const perf1 = s1 * (0.4 + Math.random() * 0.8);
+  const perf2 = s2 * (0.4 + Math.random() * 0.8);
+  const g1 = Math.min(5, Math.max(0, Math.floor(perf1 / 5)));
+  const g2 = Math.min(5, Math.max(0, Math.floor(perf2 / 5)));
+  return [g1, g2];
+}
+
+function penaltyShootout() {
+  let a = 0, b = 0;
+  for (let i = 0; i < 5; i++) {
+    if (Math.random() < 0.75) a++;
+    if (Math.random() < 0.75) b++;
+  }
+  while (a === b) {
+    if (Math.random() < 0.75) a++;
+    if (Math.random() < 0.75) b++;
+  }
+  return { a, b };
+}
+
+function resolveMatch(m) {
+  const [s1, s2] = randScore(m.t1, m.t2);
+  let winner, pen;
+  if (s1 !== s2) {
+    winner = s1 > s2 ? m.t1 : m.t2;
+  } else {
+    pen = penaltyShootout();
+    winner = pen.a > pen.b ? m.t1 : m.t2;
+  }
+  return { ...m, s1, s2, winner, pen };
 }
 
 function resolveMatches(pairs) {
-  return pairs.map((m) => {
-    const [s1, s2] = randScore();
-    const winner = s1 > s2 ? m.t1 : m.t2;
-    return { ...m, s1, s2, winner };
-  });
+  return pairs.map(resolveMatch);
 }
 
 function buildRound(winners, prefix) {
@@ -64,23 +99,31 @@ function generateAll(r32fixed) {
   return { r32, r16L, r16R, qfL, qfR, sfL, sfR, final };
 }
 
-function MatchCard({ match, loserSide }) {
+function MatchCard({ match }) {
   if (!match) return <div className="match-card empty" />;
-  const { t1, t2, s1, s2, winner } = match;
+  const { t1, t2, s1, s2, winner, pen } = match;
   const hasScore = winner !== undefined;
-  const t1Lost = hasScore && winner === t2;
-  const t2Lost = hasScore && winner === t1;
+  const t1Won = hasScore && winner === t1;
+  const t2Won = hasScore && winner === t2;
 
   return (
     <div className="match-card">
-      <div className={`team ${t1Lost ? "loser" : ""}`}>
+      <div className={`team ${hasScore && !t1Won ? "loser" : ""}`}>
         <span className="tname">{t1}</span>
-        {hasScore && <span className="score">{s1}</span>}
+        {hasScore && (
+          <span className="score">
+            {s1}{pen && t1Won && <span className="pen-badge">(P)</span>}
+          </span>
+        )}
       </div>
       <div className="divider" />
-      <div className={`team ${t2Lost ? "loser" : ""}`}>
+      <div className={`team ${hasScore && !t2Won ? "loser" : ""}`}>
         <span className="tname">{t2}</span>
-        {hasScore && <span className="score">{s2}</span>}
+        {hasScore && (
+          <span className="score">
+            {s2}{pen && t2Won && <span className="pen-badge">(P)</span>}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -150,13 +193,15 @@ export default function App() {
 
         {/* CENTER: Final + Button */}
         <div className="center-col">
-          <div className="final-label">FINAL</div>
-          <div className="final-wrap">
-            <MatchCard match={display.final[0]} />
+          <div className="center-main">
+            <div className="final-label">FINAL</div>
+            <div className="final-wrap">
+              <MatchCard match={display.final[0]} />
+            </div>
+            {display.final[0]?.winner && (
+              <div className="champion-label">🥇 {display.final[0].winner}</div>
+            )}
           </div>
-          {display.final[0]?.winner && (
-            <div className="champion-label">🥇 {display.final[0].winner}</div>
-          )}
           <button className="gen-btn" onClick={handleGenerate}>
             {generated ? "🔄 RE-GENERATE" : "⚽ GENERATE SCORES"}
           </button>
@@ -164,10 +209,10 @@ export default function App() {
 
         {/* RIGHT SIDE */}
         <div className="side right">
-          <RoundCol matches={display.sfR} side="right" roundClass="sf" />
-          <RoundCol matches={display.qfR} side="right" roundClass="qf" />
-          <RoundCol matches={display.r16R} side="right" roundClass="r16" />
           <RoundCol matches={rightR32} side="right" roundClass="r32" />
+          <RoundCol matches={display.r16R} side="right" roundClass="r16" />
+          <RoundCol matches={display.qfR} side="right" roundClass="qf" />
+          <RoundCol matches={display.sfR} side="right" roundClass="sf" />
         </div>
       </div>
     </div>
