@@ -109,7 +109,10 @@ function MatchCard({ match }) {
   return (
     <div className="match-card">
       <div className={`team ${hasScore && !t1Won ? "loser" : ""}`}>
-        <span className="tname">{t1}</span>
+        <span className="tname">
+          {t1}
+          {FIFA_RANKINGS[t1] != null && <span className="rank">({FIFA_RANKINGS[t1]})</span>}
+        </span>
         {hasScore && (
           <span className="score">
             {s1}{pen && t1Won && <span className="pen-badge">(P)</span>}
@@ -118,7 +121,10 @@ function MatchCard({ match }) {
       </div>
       <div className="divider" />
       <div className={`team ${hasScore && !t2Won ? "loser" : ""}`}>
-        <span className="tname">{t2}</span>
+        <span className="tname">
+          {t2}
+          {FIFA_RANKINGS[t2] != null && <span className="rank">({FIFA_RANKINGS[t2]})</span>}
+        </span>
         {hasScore && (
           <span className="score">
             {s2}{pen && t2Won && <span className="pen-badge">(P)</span>}

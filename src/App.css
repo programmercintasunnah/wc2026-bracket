@@ -145,6 +145,13 @@ html, body, #root {
   line-height: 1.2;
 }
 
+.rank {
+  font-size: 0.65em;
+  font-weight: 500;
+  color: #888;
+  margin-left: 2px;
+}
+
 .score {
   font-size: clamp(6px, 1.2vw, 9px);
   font-weight: 800;
