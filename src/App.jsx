@@ -178,42 +178,47 @@ export default function App() {
     <div className="app">
       <div className="title-bar">
         <span className="trophy">🏆</span>
-        <h1>WORLD CUP BRACKET</h1>
+        <h1>WORLD CUP BRACKET 2026</h1>
         <span className="trophy">🏆</span>
       </div>
 
-      <div className="bracket">
-        {/* LEFT SIDE */}
-        <div className="side left">
-          <RoundCol matches={leftR32} side="left" roundClass="r32" />
-          <RoundCol matches={display.r16L} side="left" roundClass="r16" />
-          <RoundCol matches={display.qfL} side="left" roundClass="qf" />
-          <RoundCol matches={display.sfL} side="left" roundClass="sf" />
-        </div>
-
-        {/* CENTER: Final + Button */}
-        <div className="center-col">
-          <div className="center-main">
-            <div className="final-label">FINAL</div>
-            <div className="final-wrap">
-              <MatchCard match={display.final[0]} />
-            </div>
-            {display.final[0]?.winner && (
-              <div className="champion-label">🥇 {display.final[0].winner}</div>
-            )}
+      <div className="bracket-scroll">
+        <div className="bracket">
+          {/* LEFT SIDE */}
+          <div className="side left">
+            <RoundCol matches={leftR32} side="left" roundClass="r32" />
+            <RoundCol matches={display.r16L} side="left" roundClass="r16" />
+            <RoundCol matches={display.qfL} side="left" roundClass="qf" />
+            <RoundCol matches={display.sfL} side="left" roundClass="sf" />
           </div>
-          <button className="gen-btn" onClick={handleGenerate}>
-            {generated ? "🔄 RE-GENERATE" : "⚽ GENERATE SCORES"}
-          </button>
-        </div>
 
-        {/* RIGHT SIDE */}
-        <div className="side right">
-          <RoundCol matches={rightR32} side="right" roundClass="r32" />
-          <RoundCol matches={display.r16R} side="right" roundClass="r16" />
-          <RoundCol matches={display.qfR} side="right" roundClass="qf" />
-          <RoundCol matches={display.sfR} side="right" roundClass="sf" />
+          {/* CENTER */}
+          <div className="center-col">
+            <div className="center-main">
+              <div className="final-label">FINAL</div>
+              <div className="final-wrap">
+                <MatchCard match={display.final[0]} />
+              </div>
+              {display.final[0]?.winner && (
+                <div className="champion-label">🥇 {display.final[0].winner}</div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div className="side right">
+            <RoundCol matches={rightR32} side="right" roundClass="r32" />
+            <RoundCol matches={display.r16R} side="right" roundClass="r16" />
+            <RoundCol matches={display.qfR} side="right" roundClass="qf" />
+            <RoundCol matches={display.sfR} side="right" roundClass="sf" />
+          </div>
         </div>
+      </div>
+
+      <div className="bottom-bar">
+        <button className="gen-btn" onClick={handleGenerate}>
+          {generated ? "🔄 RE-GENERATE" : "⚽ GENERATE SCORES"}
+        </button>
       </div>
     </div>
   );

@@ -45,13 +45,20 @@ html, body, #root {
 }
 
 /* ─── BRACKET LAYOUT ─── */
+.bracket-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+}
+
 .bracket {
   display: flex;
-  flex: 1;
   align-items: stretch;
-  overflow: hidden;
-  padding: 4px 2px 2px;
   gap: 2px;
+  padding: 4px 2px 2px;
+  min-height: 100%;
+  width: 100%;
 }
 
 .side {
@@ -75,6 +82,7 @@ html, body, #root {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  padding: 1px 0;
 }
 
 .round-col.r32 { width: clamp(58px, 12vw, 90px); }
@@ -86,6 +94,7 @@ html, body, #root {
   display: flex;
   align-items: center;
   width: 100%;
+  margin: 1px 0;
 }
 
 /* ─── MATCH CARD ─── */
@@ -164,7 +173,7 @@ html, body, #root {
   align-items: center;
   flex-shrink: 0;
   width: clamp(70px, 14vw, 110px);
-  padding: 4px 4px 10px;
+  padding: 4px;
 }
 
 .center-main {
@@ -234,13 +243,24 @@ html, body, #root {
   transform: scale(0.97);
 }
 
+/* ─── BOTTOM BAR ─── */
+.bottom-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 6px;
+  background: #0b0e1a;
+  border-top: 1px solid #f0c04033;
+}
+
 /* ─── MOBILE RESPONSIVE ─── */
 @media (max-width: 768px) {
   .round-col.r32 { width: clamp(36px, 12vw, 58px); }
   .round-col.r16,
   .round-col.qf,
   .round-col.sf { width: clamp(32px, 11vw, 52px); }
-  .center-col { width: clamp(48px, 14vw, 70px); padding: 4px 4px 8px; }
+  .center-col { width: clamp(48px, 14vw, 70px); padding: 4px; }
 
   .tname { font-size: clamp(4px, 1.1vw, 5.5px); }
   .score { font-size: clamp(4.5px, 1.2vw, 6px); }
@@ -254,6 +274,7 @@ html, body, #root {
   .champion-label { font-size: clamp(5px, 1vw, 7px); }
   .match-card.empty { min-height: 20px; }
   .team { padding: 1px 3px; min-height: 11px; }
+  .bottom-bar { padding: 4px; }
 }
 
 @media (max-width: 480px) {
@@ -264,7 +285,7 @@ html, body, #root {
   .round-col.r16,
   .round-col.qf,
   .round-col.sf { width: clamp(26px, 11vw, 32px); }
-  .center-col { width: clamp(36px, 14vw, 48px); padding: 2px 2px 6px; }
+  .center-col { width: clamp(36px, 14vw, 48px); padding: 2px; }
 
   .tname { font-size: clamp(3.5px, 1vw, 4px); }
   .score { font-size: clamp(3.5px, 1.1vw, 4.5px); }
@@ -285,14 +306,12 @@ html, body, #root {
   .team { padding: 1px 2px; min-height: 8px; gap: 1px; }
   .divider { margin: 0 2px; }
   .final-wrap .match-card { box-shadow: 0 0 4px #f0c04033; }
+  .bottom-bar { padding: 3px; }
 }
 
-/* Allow horizontal scroll on very small screens instead of clipping */
 @media (max-width: 600px) {
-  html, body, #root {
-    overflow-x: auto;
-  }
-  .bracket {
+  .bracket-scroll {
+    overflow-y: auto;
     overflow-x: auto;
   }
 }
