@@ -11,7 +11,7 @@ const INITIAL_R32 = [
   { id: "L7", t1: "USA", t2: "Bosnia" },
   { id: "L8", t1: "Belgium", t2: "Senegal" },
   { id: "R1", t1: "Brazil", t2: "Japan" },
-  { id: "R2", t1: "Ireland", t2: "Norway" },
+  { id: "R2", t1: "Ivory Coast", t2: "Norway" },
   { id: "R3", t1: "Mexico", t2: "Ecuador" },
   { id: "R4", t1: "England", t2: "DR Congo" },
   { id: "R5", t1: "Argentina", t2: "Cape Verde" },
@@ -28,18 +28,68 @@ const FIFA_RANKINGS = {
   Switzerland: 19, Ecuador: 23, Austria: 24, Australia: 27,
   Algeria: 28, Egypt: 29, Canada: 30, Norway: 31,
   Sweden: 38, Paraguay: 41, "DR Congo": 46, Ireland: 58,
-  "South Africa": 60, Bosnia: 64, "Cape Verde": 67, Ghana: 73,
+  "South Africa": 60, Bosnia: 64,   "Cape Verde": 67, Ghana: 73, "Ivory Coast": 33,
+};
+
+const GROUP_STAGE_STATS = {
+  Argentina: { gf: 8, ga: 1 },
+  Spain: { gf: 5, ga: 0 },
+  France: { gf: 10, ga: 2 },
+  England: { gf: 6, ga: 2 },
+  Portugal: { gf: 6, ga: 1 },
+  Brazil: { gf: 7, ga: 1 },
+  Morocco: { gf: 6, ga: 3 },
+  Netherlands: { gf: 10, ga: 4 },
+  Belgium: { gf: 6, ga: 2 },
+  Germany: { gf: 10, ga: 4 },
+  Croatia: { gf: 5, ga: 5 },
+  Colombia: { gf: 4, ga: 1 },
+  Mexico: { gf: 6, ga: 0 },
+  Senegal: { gf: 8, ga: 6 },
+  USA: { gf: 8, ga: 4 },
+  Japan: { gf: 7, ga: 3 },
+  Switzerland: { gf: 7, ga: 3 },
+  Ecuador: { gf: 2, ga: 2 },
+  Austria: { gf: 6, ga: 6 },
+  Australia: { gf: 2, ga: 2 },
+  Algeria: { gf: 5, ga: 7 },
+  Egypt: { gf: 5, ga: 3 },
+  Canada: { gf: 8, ga: 3 },
+  Norway: { gf: 8, ga: 7 },
+  Sweden: { gf: 7, ga: 7 },
+  Paraguay: { gf: 2, ga: 4 },
+  "DR Congo": { gf: 4, ga: 3 },
+  "South Africa": { gf: 2, ga: 3 },
+  Bosnia: { gf: 5, ga: 6 },
+  "Cape Verde": { gf: 2, ga: 2 },
+  Ghana: { gf: 2, ga: 2 },
+  "Ivory Coast": { gf: 4, ga: 2 },
 };
 
 function randScore(t1, t2) {
+  const s1 = GROUP_STAGE_STATS[t1] ?? { gf: 2, ga: 2 };
+  const s2 = GROUP_STAGE_STATS[t2] ?? { gf: 2, ga: 2 };
+
+  const avgGf1 = s1.gf / 3;
+  const avgGa1 = s1.ga / 3;
+  const avgGf2 = s2.gf / 3;
+  const avgGa2 = s2.ga / 3;
+
+  let exp1 = (avgGf1 + avgGa2) / 2;
+  let exp2 = (avgGf2 + avgGa1) / 2;
+
   const r1 = FIFA_RANKINGS[t1] ?? 50;
   const r2 = FIFA_RANKINGS[t2] ?? 50;
-  const s1 = Math.max(1, 33 - r1);
-  const s2 = Math.max(1, 33 - r2);
-  const perf1 = s1 * (0.4 + Math.random() * 0.8);
-  const perf2 = s2 * (0.4 + Math.random() * 0.8);
-  const g1 = Math.min(5, Math.max(0, Math.floor(perf1 / 5)));
-  const g2 = Math.min(5, Math.max(0, Math.floor(perf2 / 5)));
+  const adj = (r2 - r1) / 100;
+  exp1 += adj;
+  exp2 -= adj;
+
+  exp1 = Math.max(0, exp1);
+  exp2 = Math.max(0, exp2);
+
+  let g1 = Math.max(0, Math.round(exp1 + (Math.random() - 0.5) * 1.5));
+  let g2 = Math.max(0, Math.round(exp2 + (Math.random() - 0.5) * 1.5));
+
   return [g1, g2];
 }
 
